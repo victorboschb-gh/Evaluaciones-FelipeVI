@@ -1,0 +1,10 @@
+.env
+.vercel/
+__pycache__/
+*.pyc
+*.pyo
+.tmp/
+*.log
+credentials.json
+token.json
+*.exe

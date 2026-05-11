@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Evaluación - CIFP Felipe VI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+        }
+
+        .embed-wrapper {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .embed-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .embed-header .logo {
+            height: 40px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+        .embed-header h1 {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .embed-header .subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            font-weight: 400;
+        }
+
+        .embed-header .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .embed-header .fullscreen-btn {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+
+        .embed-header .fullscreen-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .iframe-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.4s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #cbd5e0;
+            border-top-color: #2c5282;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 16px;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 640px) {
+            .embed-header {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+
+            .embed-header .logo {
+                height: 32px;
+            }
+
+            .embed-header h1 {
+                font-size: 0.85rem;
+            }
+
+            .embed-header .subtitle {
+                display: none;
+            }
+
+            .embed-header .fullscreen-btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="embed-wrapper">
+        <div class="embed-header">
+            <img src="https://calendario-evaluaciones.vercel.app/Logo_CIFP.png" alt="CIFP Felipe VI" class="logo">
+            <div class="header-text">
+                <h1>Calendario de Juntas de Evaluación</h1>
+                <span class="subtitle">CIFP Felipe VI</span>
+            </div>
+            <a href="https://calendario-evaluaciones.vercel.app" target="_blank" class="fullscreen-btn">
+                Abrir en ventana nueva &#8599;
+            </a>
+        </div>
+        <div class="iframe-container">
+            <div class="loading-overlay" id="loading">
+                <div class="spinner"></div>
+                <div class="loading-text">Cargando calendario...</div>
+            </div>
+            <iframe 
+                src="https://calendario-evaluaciones.vercel.app" 
+                allow="fullscreen"
+                loading="lazy"
+                id="appFrame">
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        var iframe = document.getElementById('appFrame');
+        var loading = document.getElementById('loading');
+
+        iframe.addEventListener('load', function() {
+            setTimeout(function() {
+                loading.classList.add('hidden');
+            }, 300);
+        });
+
+        iframe.addEventListener('error', function() {
+            loading.innerHTML = '<div style="text-align:center;color:#e53e3e;"><div style="font-size:2rem;margin-bottom:8px;">&#9888;</div><p>No se pudo cargar el calendario.</p><p style="margin-top:8px;"><a href="https://calendario-evaluaciones.vercel.app" target="_blank" style="color:#2c5282;text-decoration:underline;">Abrir directamente</a></p></div>';
+        });
+
+        if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+            loading.classList.add('hidden');
+        }
+
+        setTimeout(function() {
+            if (!loading.classList.contains('hidden')) {
+                loading.classList.add('hidden');
+            }
+        }, 8000);
+    </script>
+</body>
+</html>

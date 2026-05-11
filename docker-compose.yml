@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: demo_agentic_n8n
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.tmp:/app/.tmp
+      - ./deliverables:/app/deliverables
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Juntas de Evaluación</title>
+    <link rel="icon" type="image/png" href="/Logo_CIFP.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    <div class="min-h-screen flex items-center justify-center px-4 py-8">
+        <div class="max-w-md w-full">
+            <div class="text-center mb-8">
+                <div class="flex items-center justify-center gap-6 mb-6">
+                    <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-16 object-contain">
+                    <img src="/logo_nos_impulsa.png" alt="Nos Impulsa" class="h-16 object-contain">
+                </div>
+                <h1 class="text-3xl font-bold text-blue-800 mb-2">
+                    <i class="fa-solid fa-user-plus mr-2"></i>Crear Cuenta
+                </h1>
+                <p class="text-gray-500">Solicita acceso al sistema de juntas de evaluación</p>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+                <div id="error-msg" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"></div>
+                <div id="success-msg" class="hidden mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm"></div>
+
+                <form id="register-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-3 top-3 text-gray-400"></i>
+                            <input type="text" id="full_name" required
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Tu nombre y apellidos">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute left-3 top-3 text-gray-400"></i>
+                            <input type="tel" id="phone" required
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="600 000 000">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-3 top-3 text-gray-400"></i>
+                            <input type="email" id="email" required
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="tu@email.com">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-3 text-gray-400"></i>
+                            <input type="password" id="password" required minlength="6"
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Mínimo 6 caracteres">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-3 top-3 text-gray-400"></i>
+                            <input type="password" id="password_confirm" required minlength="6"
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Repite tu contraseña">
+                        </div>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        <i class="fa-solid fa-paper-plane mr-2"></i>Solicitar Acceso
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm text-gray-500">¿Ya tienes cuenta?
+                        <a href="/login.html" class="text-blue-600 hover:underline font-medium">Inicia sesión</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorEl = document.getElementById('error-msg');
+            const successEl = document.getElementById('success-msg');
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('password_confirm').value;
+
+            if (password !== confirm) {
+                errorEl.textContent = 'Las contraseñas no coinciden';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        full_name: document.getElementById('full_name').value,
+                        phone: document.getElementById('phone').value,
+                        email: document.getElementById('email').value,
+                        password: password
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorEl.textContent = data.error || 'Error al crear la cuenta';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+
+                successEl.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> Cuenta creada correctamente. Un administrador revisará tu solicitud. Recibirás acceso una vez aprobada. <a href="/login.html" class="underline font-medium">Ir a login</a>';
+                successEl.classList.remove('hidden');
+                document.getElementById('register-form').reset();
+            } catch (err) {
+                errorEl.textContent = 'Error de conexión';
+                errorEl.classList.remove('hidden');
+            }
+        });
+    </script>
+
+    <footer class="mt-12 pt-6 border-t border-gray-200 text-center">
+        <div class="flex items-center justify-center gap-6 mb-4 flex-wrap">
+            <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-12 object-contain">
+            <div class="flex items-center gap-2">
+                <img src="/logo_nos_impulsa.png" alt="Nos Impulsa" class="h-12 object-contain">
+                <span class="text-xs text-gray-500">AE-PUB-2025-094</span>
+            </div>
+        </div>
+        <p class="text-xs text-gray-400 text-center">Sistema de Juntas de Evaluación. <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="underline">CC BY-NC-SA 4.0</a> <img src="/logo_creative_commons.jpg" alt="Creative Commons" class="h-4 inline-block align-middle ml-1"></p>
+    </footer>
+</body>
+</html>

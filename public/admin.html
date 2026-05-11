@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Juntas de Evaluación</title>
+    <link rel="icon" type="image/png" href="/Logo_CIFP.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <header class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-12 object-contain">
+                    <div>
+                        <h1 class="text-2xl font-bold text-blue-800">
+                            <i class="fa-solid fa-shield-halved mr-2"></i>Panel de Administración
+                        </h1>
+                        <p class="text-sm text-gray-500">Gestión de usuarios del sistema</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="/" class="text-sm bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fa-solid fa-calendar-check mr-1"></i>Ir a la app
+                    </a>
+                    <button onclick="logout()" class="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i>Cerrar sesión
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div id="error-msg" class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"></div>
+        <div id="success-msg" class="hidden mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm"></div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6" id="stats-cards">
+        </div>
+
+        <!-- Pending users -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100 mb-6">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-700">
+                    <i class="fa-solid fa-clock text-amber-500 mr-2"></i>Pendientes de aprobación
+                </h2>
+                <span id="pending-badge" class="bg-amber-100 text-amber-700 text-xs font-medium px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="pending-table" class="divide-y divide-gray-50"></div>
+        </div>
+
+        <!-- All users -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-100">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="font-semibold text-gray-700">
+                    <i class="fa-solid fa-users text-blue-500 mr-2"></i>Todos los usuarios
+                </h2>
+                <span id="total-badge" class="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="users-table" class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 text-gray-600">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-medium">Nombre</th>
+                            <th class="px-4 py-3 text-left font-medium">Teléfono</th>
+                            <th class="px-4 py-3 text-left font-medium">Email</th>
+                            <th class="px-4 py-3 text-left font-medium">Estado</th>
+                            <th class="px-4 py-3 text-left font-medium">Registro</th>
+                            <th class="px-4 py-3 text-left font-medium">Último acceso</th>
+                            <th class="px-4 py-3 text-center font-medium">Horarios</th>
+                            <th class="px-4 py-3 text-center font-medium">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-body" class="divide-y divide-gray-50"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/auth/me');
+                if (!res.ok) {
+                    window.location.href = '/login.html';
+                    return null;
+                }
+                const user = await res.json();
+                if (!user.is_admin) {
+                    window.location.href = '/';
+                    return null;
+                }
+                currentUser = user;
+                return user;
+            } catch {
+                window.location.href = '/login.html';
+                return null;
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const data = await res.json();
+                renderUsers(data.users);
+            } catch (err) {
+                showError('Error al cargar usuarios');
+            }
+        }
+
+        function formatDate(isoStr) {
+            if (!isoStr) return '—';
+            const d = new Date(isoStr);
+            return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+                   ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function statusBadge(status) {
+            const colors = {
+                pending: 'bg-amber-100 text-amber-700',
+                approved: 'bg-green-100 text-green-700',
+                rejected: 'bg-red-100 text-red-700'
+            };
+            const labels = {
+                pending: 'Pendiente',
+                approved: 'Aprobado',
+                rejected: 'Rechazado'
+            };
+            return `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] || ''}">${labels[status] || status}</span>`;
+        }
+
+        function renderUsers(users) {
+            const pending = users.filter(u => u.status === 'pending');
+            const approved = users.filter(u => u.status === 'approved');
+            const rejected = users.filter(u => u.status === 'rejected');
+
+            document.getElementById('pending-badge').textContent = pending.length;
+            document.getElementById('total-badge').textContent = users.length;
+
+            document.getElementById('stats-cards').innerHTML = `
+                <div class="bg-white rounded-xl shadow p-4 border border-amber-100">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-amber-50 p-3 rounded-lg"><i class="fa-solid fa-clock text-amber-500 text-xl"></i></div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">${pending.length}</p>
+                            <p class="text-xs text-gray-500">Pendientes</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow p-4 border border-green-100">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-50 p-3 rounded-lg"><i class="fa-solid fa-user-check text-green-500 text-xl"></i></div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">${approved.length}</p>
+                            <p class="text-xs text-gray-500">Aprobados</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow p-4 border border-red-100">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-red-50 p-3 rounded-lg"><i class="fa-solid fa-user-xmark text-red-500 text-xl"></i></div>
+                        <div>
+                            <p class="text-2xl font-bold text-gray-800">${rejected.length}</p>
+                            <p class="text-xs text-gray-500">Rechazados</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const pendingContainer = document.getElementById('pending-table');
+            if (pending.length === 0) {
+                pendingContainer.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">No hay usuarios pendientes</div>';
+            } else {
+                pendingContainer.innerHTML = pending.map(u => `
+                    <div class="p-4 flex items-center justify-between hover:bg-gray-50">
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">${escHtml(u.full_name)}</p>
+                            <p class="text-xs text-gray-500">${escHtml(u.email)} · ${escHtml(u.phone)}</p>
+                            <p class="text-xs text-gray-400">Registrado: ${formatDate(u.created_at)}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="approveUser('${u.id}')" class="bg-green-50 text-green-600 hover:bg-green-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fa-solid fa-check mr-1"></i>Aprobar
+                            </button>
+                            <button onclick="rejectUser('${u.id}')" class="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fa-solid fa-xmark mr-1"></i>Rechazar
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const tbody = document.getElementById('users-body');
+            tbody.innerHTML = users.map(u => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 py-3 font-medium">${escHtml(u.full_name)}${u.email === '${currentUser?.email}' ? ' <span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Admin</span>' : ''}</td>
+                    <td class="px-4 py-3 text-gray-600">${escHtml(u.phone)}</td>
+                    <td class="px-4 py-3 text-gray-600">${escHtml(u.email)}</td>
+                    <td class="px-4 py-3">${statusBadge(u.status)}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">${formatDate(u.created_at)}</td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">${formatDate(u.last_login)}</td>
+                    <td class="px-4 py-3 text-center font-medium">${u.generate_count}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex justify-center gap-1">
+                            ${u.status === 'pending' ? `
+                                <button onclick="approveUser('${u.id}')" class="text-green-500 hover:text-green-700 p-1" title="Aprobar"><i class="fa-solid fa-check"></i></button>
+                                <button onclick="rejectUser('${u.id}')" class="text-red-500 hover:text-red-700 p-1" title="Rechazar"><i class="fa-solid fa-xmark"></i></button>
+                            ` : u.status === 'rejected' ? `
+                                <button onclick="approveUser('${u.id}')" class="text-green-500 hover:text-green-700 p-1" title="Aprobar"><i class="fa-solid fa-check"></i></button>
+                            ` : `
+                                <button onclick="deleteUser('${u.id}', '${escHtml(u.full_name)}')" class="text-red-500 hover:text-red-700 p-1" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function escHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+
+        async function approveUser(id) {
+            try {
+                const res = await fetch(`/api/admin/users/${id}/approve`, { method: 'POST' });
+                if (res.ok) {
+                    showSuccess('Usuario aprobado');
+                    loadUsers();
+                } else {
+                    const data = await res.json();
+                    showError(data.error || 'Error');
+                }
+            } catch { showError('Error de conexión'); }
+        }
+
+        async function rejectUser(id) {
+            try {
+                const res = await fetch(`/api/admin/users/${id}/reject`, { method: 'POST' });
+                if (res.ok) {
+                    showSuccess('Usuario rechazado');
+                    loadUsers();
+                } else {
+                    const data = await res.json();
+                    showError(data.error || 'Error');
+                }
+            } catch { showError('Error de conexión'); }
+        }
+
+        async function deleteUser(id, name) {
+            if (!confirm(`¿Eliminar a "${name}"? Podrá volver a registrarse.`)) return;
+            try {
+                const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    showSuccess('Usuario eliminado');
+                    loadUsers();
+                } else {
+                    const data = await res.json();
+                    showError(data.error || 'Error');
+                }
+            } catch { showError('Error de conexión'); }
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/login.html?logout=1';
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('error-msg');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 4000);
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('success-msg');
+            el.textContent = msg;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        (async () => {
+            const user = await checkAuth();
+            if (user) loadUsers();
+        })();
+    </script>
+
+    <footer class="mt-12 pt-6 border-t border-gray-200 text-center">
+        <div class="flex items-center justify-center gap-6 mb-4 flex-wrap">
+            <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-12 object-contain">
+            <div class="flex items-center gap-2">
+                <img src="/logo_nos_impulsa.png" alt="Nos Impulsa" class="h-12 object-contain">
+                <span class="text-xs text-gray-500">AE-PUB-2025-094</span>
+            </div>
+        </div>
+        <p class="text-xs text-gray-400 text-center">Sistema de Juntas de Evaluación. <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="underline">CC BY-NC-SA 4.0</a> <img src="/logo_creative_commons.jpg" alt="Creative Commons" class="h-4 inline-block align-middle ml-1"></p>
+    </footer>
+</div>
+</body>
+</html>

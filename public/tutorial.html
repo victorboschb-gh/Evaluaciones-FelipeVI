@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Uso - Sistema de Juntas</title>
+    <link rel="icon" type="image/png" href="/Logo_CIFP.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+    <div class="max-w-4xl mx-auto px-4 py-12">
+        <!-- Header -->
+        <header class="mb-10">
+            <div class="flex items-center justify-between mb-4">
+                <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-16 object-contain">
+                <img src="/logo_nos_impulsa.png" alt="Nos Impulsa" class="h-16 object-contain">
+            </div>
+            <div class="text-center relative">
+                <a href="/" class="absolute left-0 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800 flex items-center font-medium">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Volver al Generador
+                </a>
+                <h1 class="text-4xl font-bold text-blue-800 mb-2">
+                    <i class="fa-solid fa-book-open-reader mr-3"></i>Guía Paso a Paso
+                </h1>
+                <p class="text-gray-600 text-lg">Aprende a generar tu calendario de evaluación en 4 sencillos pasos</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <div class="space-y-8">
+            
+            <!-- Step 1 -->
+            <div class="bg-white rounded-xl shadow-md p-8 border-l-4 border-blue-500">
+                <div class="flex items-center mb-4">
+                    <div class="bg-blue-100 text-blue-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl mr-4 shadow-sm">1</div>
+                    <h2 class="text-2xl font-bold text-gray-800">Prepara tu archivo Excel</h2>
+                </div>
+                <p class="text-gray-600 mb-4">El primer paso es tener los datos de tus profesores y grupos organizados. Puedes usar nuestra plantilla prediseñada para que sea mucho más fácil.</p>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Haz clic en el botón <strong>"Descargar Plantilla Excel"</strong> en la página principal.</li>
+                        <li>Abre el archivo descargado. Verás dos hojas principales:
+                            <ul class="list-disc list-inside ml-6 mt-2 text-gray-600">
+                                <li><strong>Hoja Grupos:</strong> Aquí debes poner el <em>ID del grupo</em> (ej. S1A, B2C), la <em>Familia</em> a la que pertenece y el <em>Turno</em> (escribe "Mañana" o "Tarde"). <br>
+                                <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded inline-block mt-1"><i class="fa-solid fa-lightbulb mr-1"></i> <strong>Nota:</strong> El campo Turno es obligatorio. Escribe exactamente "Mañana" o "Tarde" para cada grupo.</span></li>
+                                <li class="mt-2"><strong>Hoja Profesores:</strong> Escribe el nombre del profesor y, en la columna de al lado, escribe <strong>todos los grupos</strong> en los que da clase separados por comas (ej. <em>S1A, B2C, 1A</em>).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-white rounded-xl shadow-md p-8 border-l-4 border-green-500">
+                <div class="flex items-center mb-4">
+                    <div class="bg-green-100 text-green-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl mr-4 shadow-sm">2</div>
+                    <h2 class="text-2xl font-bold text-gray-800">Sube y filtra tus grupos</h2>
+                </div>
+                <p class="text-gray-600 mb-4">Una vez rellenado y guardado tu Excel, súbelo al sistema.</p>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Arrastra tu archivo Excel al recuadro central o haz clic para buscarlo en tu ordenador.</li>
+                        <li>Al momento, aparecerá un panel llamado <strong>"Grupos Detectados"</strong> mostrando botones verdes con cada grupo encontrado.</li>
+                        <li><strong>Filtrar grupos:</strong> Si no quieres que un grupo en concreto entre en el calendario (por ejemplo, porque ya ha sido evaluado), simplemente haz clic sobre él para ponerlo en gris. Solo los grupos en color verde serán programados.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-white rounded-xl shadow-md p-8 border-l-4 border-purple-500">
+                <div class="flex items-center mb-4">
+                    <div class="bg-purple-100 text-purple-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl mr-4 shadow-sm">3</div>
+                    <h2 class="text-2xl font-bold text-gray-800">Configura horarios y días de evaluación</h2>
+                </div>
+                <p class="text-gray-600 mb-4">Dile al sistema cuándo hay disponibilidad y cómo organizar las sesiones.</p>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                        <li><strong>Horarios Excluidos (Clases):</strong> Define a qué horas dan clase los turnos de mañana y tarde. El sistema usará esto para asegurar que un profesor <strong>no tenga una junta mientras debe estar dando clase</strong>.</li>
+                        <li><strong>Días de Evaluación:</strong> Añade todos los días que necesites usando el botón "Añadir Día".</li>
+                        <li>Para cada día, define a qué hora empiezan y terminan las juntas, y marca <strong>qué salas</strong> estarán disponibles (Sala de Profesores, Salón de Actos, etc.).</li>
+                    </ul>
+                </div>
+                <div class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
+                    <i class="fa-solid fa-lightbulb mr-2"></i>
+                    <strong>Consejo:</strong> Si ves que quedan grupos sin asignar, prueba a añadir más días o salas. El sistema agrupa automáticamente por turno (mañana/tarde) y por nivel o familia para minimizar esperas.
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="bg-white rounded-xl shadow-md p-8 border-l-4 border-orange-500">
+                <div class="flex items-center mb-4">
+                    <div class="bg-orange-100 text-orange-700 rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl mr-4 shadow-sm">4</div>
+                    <h2 class="text-2xl font-bold text-gray-800">Genera tu documento Word</h2>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                        <li>Pulsa el botón <strong>"Generar Calendario"</strong> situado al final de la página.</li>
+                        <li>El motor cruzará todos los datos, evitará solapamientos de profesores, respetará los horarios excluidos, el hueco de comida, y optimizará la jornada y los huecos entre reuniones de cada profesor.</li>
+                        <li>Tras unos segundos, tu navegador descargará automáticamente un archivo <strong>Calendario_Juntas.docx</strong> listo para imprimir o compartir.</li>
+                    </ul>
+                </div>
+                <div class="mt-6 text-center">
+                    <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition-all text-lg">
+                        ¡Entendido, ir al Generador!
+                    </a>
+                </div>
+            </div>
+
+        </div>
+        
+        <footer class="mt-12 pt-8 border-t border-gray-200">
+            <div class="flex items-center justify-center gap-6 mb-4 flex-wrap">
+                <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-14 object-contain">
+                <div class="flex items-center gap-2">
+                    <img src="/logo_nos_impulsa.png" alt="Nos Impulsa" class="h-14 object-contain">
+                    <span class="text-xs text-gray-500">AE-PUB-2025-094</span>
+                </div>
+            </div>
+            <p class="text-sm text-gray-400 text-center">Sistema de Juntas de Evaluación. <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" class="underline">CC BY-NC-SA 4.0</a> <img src="/logo_creative_commons.jpg" alt="Creative Commons" class="h-5 inline-block align-middle ml-1"></p>
+        </footer>
+    </div>
+</body>
+</html>

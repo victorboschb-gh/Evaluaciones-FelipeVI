@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+.venv
+*.xlsx
+*.xls
+.vscode/
+.git/
+.gitignore
+.tmp/
+deliverables/

@@ -103,3 +103,7 @@ Este proyecto está licenciado bajo **Creative Commons Attribution-ShareAlike 4.
 Eres libre de usar, modificar y distribuir este software, incluso con fines comerciales, siempre que des crédito apropiado y distribuyas las obras derivadas bajo la misma licencia.
 
 Consulta el archivo [LICENSE](LICENSE) para más detalles o visita [creativecommons.org/licenses/by-sa/4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+## Créditos
+
+Este proyecto forma parte del **Proyecto Aula-Empresa+ Castilla y León 2025/2026** del **CIFP Felipe VI** (Segovia). Consulta el detalle de autoría y créditos en [CREDITS.md](./CREDITS.md).

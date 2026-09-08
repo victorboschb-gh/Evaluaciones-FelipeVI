@@ -22,5 +22,5 @@ Atribución recomendada:
 
 ## Documentación
 
+- **Guía práctica de automatizaciones para la gestión educativa** (v2.2, créditos actualizados): [docs/Guia_Practica_Automatizaciones_CIFP_v2.2.pdf](./docs/Guia_Practica_Automatizaciones_CIFP_v2.2.pdf)
 - **Aplicación en producción**: [Calendario de Juntas de Evaluación — web del CIFP Felipe VI](https://cifpfelipevi.centros.educa.jcyl.es/sitio/index.cgi?wid_seccion=52&wid_item=195)
-- **Guía práctica de automatizaciones para la gestión educativa**: documento disponible en el centro (pendiente de publicación en línea)

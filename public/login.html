@@ -100,6 +100,7 @@
 
     <script>
         const params = new URLSearchParams(window.location.search);
+        const redirectUrl = params.get('redirect') || null;
         if (params.get('registered') === '1') {
             document.getElementById('success-msg').textContent = 'Cuenta creada correctamente. Pendiente de aprobación por el administrador.';
             document.getElementById('success-msg').classList.remove('hidden');
@@ -133,9 +134,9 @@
                 }
 
                 if (data.user && data.user.is_admin) {
-                    window.location.href = '/admin.html';
+                    window.location.href = redirectUrl || '/admin.html';
                 } else {
-                    window.location.href = '/';
+                    window.location.href = redirectUrl || '/';
                 }
             } catch (err) {
                 errorEl.textContent = 'Error de conexión';

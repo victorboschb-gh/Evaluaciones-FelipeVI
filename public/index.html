@@ -15,6 +15,9 @@
             <div class="flex items-center justify-between mb-4">
                 <img src="/Logo_CIFP.png" alt="CIFP Felipe VI" class="h-16 object-contain">
                 <div class="flex items-center gap-3">
+                    <a id="login-link" href="/login.html" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg transition-colors">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i>Entrar
+                    </a>
                     <span id="user-info" class="text-sm text-gray-500 hidden"></span>
                     <a id="admin-link" href="/admin.html" class="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors hidden">
                         <i class="fa-solid fa-shield-halved mr-1"></i>Admin
@@ -37,11 +40,16 @@
             <div class="mb-6">
                 <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
                     <a href="/tutorial.html" class="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm md:text-base">
-                        <i class="fa-solid fa-circle-question mr-2 text-xl"></i> ¿Cómo funciona esto? (Guía paso a paso)
+                        <i class="fa-solid fa-circle-question mr-2 text-xl"></i> ¿Cómo funciona? (Paso a paso)
                     </a>
-                    <a href="/Plantilla_Evaluacion.xlsx" download class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow transition-colors flex items-center inline-block">
-                        <i class="fa-solid fa-file-excel mr-2"></i> Descargar Plantilla Excel
-                    </a>
+                    <div class="flex items-center gap-3">
+                        <a href="/Guia_Practica_Automatizaciones_CIFP_v2 (1).pdf" download class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded shadow transition-colors flex items-center inline-block">
+                            <i class="fa-solid fa-file-pdf mr-2"></i> Descargar Guía
+                        </a>
+                        <a href="/Plantilla_Evaluacion.xlsx" download class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow transition-colors flex items-center inline-block">
+                            <i class="fa-solid fa-file-excel mr-2"></i> Descargar Plantilla Excel
+                        </a>
+                    </div>
                 </div>
             </div>
             <form id="uploadForm" class="space-y-6">
@@ -214,6 +222,12 @@
                 const file = e.target.files[0];
                 if (!file) return;
 
+                if (!_isAuthenticated) {
+                    e.target.value = '';
+                    window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
                 const parseData = new FormData();
                 parseData.append('file', file);
 
@@ -280,6 +294,11 @@
         document.getElementById('uploadForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            if (!_isAuthenticated) {
+                window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+
             const form = e.target;
             const submitBtn = document.getElementById('generateBtn');
             const statusContainer = document.getElementById('statusContainer');
@@ -426,24 +445,36 @@
     </script>
 
     <script>
+        let _isAuthenticated = false;
+
         async function checkAuth() {
             try {
                 const res = await fetch('/api/auth/me');
                 if (!res.ok) {
-                    window.location.href = '/login.html';
+                    _isAuthenticated = false;
                     return;
                 }
                 const user = await res.json();
+                _isAuthenticated = true;
                 const userInfo = document.getElementById('user-info');
                 userInfo.textContent = user.full_name || user.email;
                 userInfo.classList.remove('hidden');
                 document.getElementById('logout-btn').classList.remove('hidden');
+                document.getElementById('login-link').classList.add('hidden');
                 if (user.is_admin) {
                     document.getElementById('admin-link').classList.remove('hidden');
                 }
             } catch {
-                window.location.href = '/login.html';
+                _isAuthenticated = false;
             }
+        }
+
+        function requireLoginForAction(callback) {
+            if (_isAuthenticated) {
+                callback();
+                return;
+            }
+            window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
         }
 
         async function logout() {
